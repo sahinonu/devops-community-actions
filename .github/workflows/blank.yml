@@ -15,8 +15,8 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
+    name: Job 1
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -34,3 +34,42 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+          
+  deploy:
+    name: Job 2
+    # Dependecy makes deploy job wait for build-job
+    needs: [build]
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+    # environment sets defined repository variables into this context
+    environment: dev
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo ${{ vars.ENV_VAR }}
+          
+  parallelism:
+    name: Parallel Job
+    # Without dependecy this job will be executed in parallel
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+    # environment sets defined repository variables into this context
+    environment: stage
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo ${{ vars.ENV_VAR }}
